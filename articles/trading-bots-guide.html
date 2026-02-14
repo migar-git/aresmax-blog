@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Set Up AI Trading Bots: A Beginner's Guide — Aresmax Blog</title>
+  <meta name="description" content="Step-by-step guide to setting up AI trading bots with 3Commas, Freqtrade, and Alpaca. Learn DCA strategies, risk management, and automated trading in 2026.">
+  <meta name="keywords" content="AI trading bots guide, 3Commas setup, Freqtrade tutorial, Alpaca trading bot, DCA strategy, automated trading 2026">
+  <meta name="author" content="Aresmax">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="How to Set Up AI Trading Bots: A Beginner's Guide">
+  <meta property="og:description" content="Step-by-step guide to automated trading with 3Commas, Freqtrade, and Alpaca. DCA strategies, risk management, and more.">
+  <meta property="og:url" content="https://migar-git.github.io/aresmax-blog/articles/trading-bots-guide.html">
+  <meta property="og:site_name" content="Aresmax Blog">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="How to Set Up AI Trading Bots: A Beginner's Guide">
+  <meta name="twitter:description" content="Step-by-step guide to automated crypto and stock trading with AI bots. Covers 3Commas, Freqtrade, and Alpaca.">
+
+  <link rel="canonical" href="https://migar-git.github.io/aresmax-blog/articles/trading-bots-guide.html">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <a href="../" class="logo">ares<span>max</span></a>
+      <nav>
+        <a href="../#articles">Articles</a>
+        <a href="../#subscribe">Subscribe</a>
+        <a href="https://github.com/migar-git" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Article Header -->
+  <section class="article-header">
+    <div class="article-container">
+      <span class="tag">Trading</span>
+      <h1>How to Set Up AI Trading Bots: A Beginner's Guide</h1>
+      <div class="meta">Feb 14, 2026 &middot; 9 min read &middot; By Aresmax</div>
+    </div>
+  </section>
+
+  <!-- Article Body -->
+  <article class="article-body">
+    <div class="article-container">
+
+      <a href="../" class="back-home">Back to all articles</a>
+
+      <p>Automated trading used to be the exclusive domain of hedge funds and quantitative firms with million-dollar infrastructure budgets. In 2026, anyone with a laptop and a few hundred dollars can deploy sophisticated trading bots that operate 24/7 across crypto and stock markets.</p>
+
+      <p>This guide walks you through the three most accessible platforms for automated trading: 3Commas for managed crypto bots, Freqtrade for custom open-source strategies, and Alpaca for commission-free stock and crypto trading via API. We cover the actual setup process, explain the most popular strategies, and give you the risk management framework you need to avoid blowing up your account.</p>
+
+      <div class="warning-box">
+        <strong>Risk Disclaimer</strong>
+        <p>Trading involves significant risk of loss. Automated bots can lose money just as fast as they make it. Never trade with money you cannot afford to lose. Start with paper trading and small amounts. Past performance does not guarantee future results.</p>
+      </div>
+
+      <hr>
+
+      <h2>Understanding the Basics</h2>
+
+      <h3>What Is an AI Trading Bot?</h3>
+
+      <p>A trading bot is software that automatically buys and sells assets based on predefined rules or machine learning models. The "AI" in AI trading bots typically refers to one of three things: algorithmic strategies based on technical indicators, machine learning models that adapt to market conditions, or natural language processing that incorporates news sentiment into trading decisions.</p>
+
+      <p>For beginners, the most accessible and battle-tested approach is algorithmic trading using technical indicators. This is what platforms like 3Commas make easy. Machine learning approaches (used in Freqtrade custom strategies) offer more sophistication but require more technical skill. We will cover both.</p>
+
+      <h3>What Is DCA (Dollar-Cost Averaging)?</h3>
+
+      <p>DCA is the single most important strategy for bot trading beginners, so it is worth understanding deeply before we touch any platform.</p>
+
+      <p>Traditional DCA means investing a fixed dollar amount at regular intervals regardless of price. Buy $100 of Bitcoin every Monday, whether the price is $50,000 or $80,000. Over time, this smooths out your average entry price and removes the emotional component of trying to time the market.</p>
+
+      <p>Bot DCA is a more aggressive variant. Instead of buying on a schedule, the bot opens a position when a technical signal triggers (like a price drop or an indicator crossover), then places additional "safety orders" at progressively lower prices if the trade moves against you. Each safety order is larger than the previous one, pulling your average entry price down. When the price rebounds to your target profit level, the bot closes the entire position.</p>
+
+      <p>Here is a concrete example of a DCA bot trade on Bitcoin:</p>
+
+      <ol>
+        <li>Bot detects a buy signal at $72,000. Places a base order of $200.</li>
+        <li>Price drops 2% to $70,560. First safety order triggers: $400 buy.</li>
+        <li>Price drops another 3% to $68,443. Second safety order: $800 buy.</li>
+        <li>Total invested: $1,400. Average entry price: $69,824.</li>
+        <li>Price rebounds 1.5% to $70,871. Bot sells all for ~$1,421 profit.</li>
+      </ol>
+
+      <p>The risk is obvious: if the price keeps dropping beyond your safety orders, you end up with a large position at a loss. This is why risk management (covered later) is essential.</p>
+
+      <hr>
+
+      <h2>Platform 1: 3Commas &mdash; Managed Crypto Bots</h2>
+
+      <p>3Commas is the most beginner-friendly option for crypto trading bots. It connects to every major exchange (Coinbase, Binance, Kraken, Bybit, and more) and provides a visual interface for creating and managing bots without writing any code.</p>
+
+      <h3>Step-by-Step Setup</h3>
+
+      <p><strong>Step 1: Create Your Account and Connect an Exchange</strong></p>
+
+      <p>Sign up at <a href="#affiliate-link-1">3commas.io</a>. Once logged in, go to "My Exchanges" and click "Connect Exchange." Select your exchange (we recommend Coinbase Advanced for US users), and follow the API key creation guide. You will need to generate an API key and secret on your exchange with trading permissions enabled but withdrawal permissions disabled. This is critical: never give any bot platform withdrawal access to your funds.</p>
+
+      <p><strong>Step 2: Start with a DCA Bot</strong></p>
+
+      <p>Navigate to "Bots" and click "Create Bot." Select "DCA Bot" as the type. Here are the settings we recommend for beginners:</p>
+
+      <ul>
+        <li><strong>Pair:</strong> BTC/USD or ETH/USD (start with major pairs only)</li>
+        <li><strong>Base order size:</strong> $25-$50 (keep it small while learning)</li>
+        <li><strong>Safety order size:</strong> Same as base order or 1.5x</li>
+        <li><strong>Max safety orders:</strong> 3-5 (limits your maximum exposure)</li>
+        <li><strong>Price deviation for safety orders:</strong> 1.5-2% (how far price must drop between orders)</li>
+        <li><strong>Safety order volume scale:</strong> 1.5 (each safety order is 1.5x the previous)</li>
+        <li><strong>Take profit:</strong> 1.5-2% (target profit percentage)</li>
+        <li><strong>Start condition:</strong> "RSI-7 lower than 30" (buy when asset is oversold)</li>
+      </ul>
+
+      <p><strong>Step 3: Paper Trade First</strong></p>
+
+      <p>3Commas offers paper trading mode. Use it. Run your bot for at least two weeks in paper mode before risking real money. Track the results, understand how the bot behaves during volatility, and adjust your settings based on what you observe.</p>
+
+      <p><strong>Step 4: Go Live with Small Capital</strong></p>
+
+      <p>When you are comfortable with paper trading results, switch to live mode with no more than 5% of your trading capital allocated to a single bot. Scale up gradually as you gain confidence and data.</p>
+
+      <div class="tip-box">
+        <strong>Pro Tip</strong>
+        <p>3Commas has a "Marketplace" where top traders share their bot configurations. Browse it for inspiration, but never blindly copy someone else's settings without understanding the strategy. What works in a bull market can destroy your capital in a bear market.</p>
+      </div>
+
+      <p><strong>Pricing:</strong> Free plan (1 DCA bot), Pro at $37/month (50 bots), Expert at $79/month (unlimited bots + advanced features).</p>
+
+      <p><a href="#affiliate-link-1" class="btn">Try 3Commas Free</a></p>
+
+      <hr>
+
+      <h2>Platform 2: Freqtrade &mdash; Open-Source Custom Strategies</h2>
+
+      <p>Freqtrade is a free, open-source crypto trading bot written in Python. It is the tool of choice for traders who want full control over their strategy logic. The learning curve is steeper than 3Commas, but the flexibility is unlimited.</p>
+
+      <h3>Step-by-Step Setup</h3>
+
+      <p><strong>Step 1: Install Freqtrade</strong></p>
+
+      <p>Freqtrade runs on Linux, macOS, and Windows (via WSL). The quickest installation method uses Docker:</p>
+
+<pre><code># Clone the repository
+git clone https://github.com/freqtrade/freqtrade.git
+cd freqtrade
+
+# Build and run with Docker
+docker compose up -d
+
+# Or install directly with pip
+pip install freqtrade</code></pre>
+
+      <p><strong>Step 2: Configure Your Exchange Connection</strong></p>
+
+      <p>Run the configuration wizard:</p>
+
+<pre><code>freqtrade new-config</code></pre>
+
+      <p>This interactive wizard asks for your exchange, API keys, trading pair preferences, and basic strategy parameters. It generates a <code>config.json</code> file. The key settings to pay attention to:</p>
+
+<pre><code>{
+  "exchange": {
+    "name": "binance",
+    "key": "your-api-key",
+    "secret": "your-api-secret"
+  },
+  "stake_currency": "USDT",
+  "stake_amount": 50,
+  "max_open_trades": 5,
+  "dry_run": true
+}</code></pre>
+
+      <p>Note the <code>"dry_run": true</code> setting. This enables paper trading. Always start here.</p>
+
+      <p><strong>Step 3: Create a Strategy</strong></p>
+
+      <p>Freqtrade strategies are Python classes. Here is a simplified example of a strategy that buys when the RSI drops below 30 and sells when it rises above 70:</p>
+
+<pre><code>class SimpleRSIStrategy(IStrategy):
+    minimal_roi = {"0": 0.04}  # 4% minimum profit
+    stoploss = -0.10           # 10% stop loss
+    timeframe = '1h'
+
+    def populate_indicators(self, dataframe, metadata):
+        dataframe['rsi'] = ta.RSI(dataframe, timeperiod=14)
+        return dataframe
+
+    def populate_entry_trend(self, dataframe, metadata):
+        dataframe.loc[dataframe['rsi'] < 30, 'enter_long'] = 1
+        return dataframe
+
+    def populate_exit_trend(self, dataframe, metadata):
+        dataframe.loc[dataframe['rsi'] > 70, 'exit_long'] = 1
+        return dataframe</code></pre>
+
+      <p><strong>Step 4: Backtest Your Strategy</strong></p>
+
+      <p>Before running live, backtest against historical data:</p>
+
+<pre><code># Download historical data
+freqtrade download-data --timerange 20250101-20260101 -t 1h
+
+# Run backtest
+freqtrade backtesting --strategy SimpleRSIStrategy \
+  --timerange 20250101-20260101</code></pre>
+
+      <p>Freqtrade produces detailed reports showing total profit, win rate, average trade duration, drawdown, and per-pair performance. If a strategy does not show consistent profitability across different market conditions in backtesting, it will not work live.</p>
+
+      <p><strong>Step 5: Optimize and Go Live</strong></p>
+
+      <p>Use Freqtrade's hyperparameter optimization (hyperopt) to fine-tune your strategy parameters. Once you are satisfied with backtesting results, switch <code>dry_run</code> to <code>false</code> and start with minimal capital.</p>
+
+      <div class="warning-box">
+        <strong>Backtesting Warning</strong>
+        <p>Backtesting results are always better than live results. The market conditions that generated your historical data will not repeat exactly. Overfitting to historical data is the most common beginner mistake. If your backtest shows 500% annual returns, something is wrong with your methodology.</p>
+      </div>
+
+      <p><a href="#affiliate-link-2" class="btn">Freqtrade on GitHub</a></p>
+
+      <hr>
+
+      <h2>Platform 3: Alpaca &mdash; Commission-Free Stock and Crypto API</h2>
+
+      <p>Alpaca is a brokerage that provides commission-free trading of US stocks and crypto through a developer-friendly API. It is the best option for traders who want to build custom bots for traditional stock markets alongside crypto.</p>
+
+      <h3>Step-by-Step Setup</h3>
+
+      <p><strong>Step 1: Create an Account and Get API Keys</strong></p>
+
+      <p>Sign up at <a href="#affiliate-link-3">alpaca.markets</a>. Alpaca provides two environments: Paper (simulated) and Live. You get separate API keys for each. Start with Paper. Navigate to your dashboard, and your paper trading API key and secret will be displayed.</p>
+
+      <p><strong>Step 2: Install the Python SDK</strong></p>
+
+<pre><code>pip install alpaca-trade-api</code></pre>
+
+      <p><strong>Step 3: Build Your First Bot</strong></p>
+
+      <p>Here is a complete example of a simple mean-reversion bot that buys stocks when they drop significantly and sells when they recover:</p>
+
+<pre><code>import alpaca_trade_api as tradeapi
+import pandas as pd
+import time
+
+# Paper trading credentials
+api = tradeapi.REST(
+    'your-paper-api-key',
+    'your-paper-api-secret',
+    base_url='https://paper-api.alpaca.markets'
+)
+
+def get_signal(symbol):
+    """Check if stock is oversold using 20-day moving average."""
+    bars = api.get_bars(
+        symbol, '1Day', limit=25, feed='iex'
+    ).df
+    current_price = bars['close'].iloc[-1]
+    sma_20 = bars['close'].rolling(20).mean().iloc[-1]
+
+    if current_price < sma_20 * 0.97:  # 3% below SMA
+        return 'buy'
+    elif current_price > sma_20 * 1.02:  # 2% above SMA
+        return 'sell'
+    return 'hold'
+
+symbols = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA']
+
+while True:
+    for symbol in symbols:
+        signal = get_signal(symbol)
+        position = None
+        try:
+            position = api.get_position(symbol)
+        except:
+            pass
+
+        if signal == 'buy' and not position:
+            api.submit_order(
+                symbol=symbol,
+                qty=1,
+                side='buy',
+                type='market',
+                time_in_force='day'
+            )
+            print(f"BUY {symbol}")
+
+        elif signal == 'sell' and position:
+            api.close_position(symbol)
+            print(f"SELL {symbol}")
+
+    time.sleep(3600)  # Check every hour</code></pre>
+
+      <p><strong>Step 4: Important Notes for Alpaca</strong></p>
+
+      <ul>
+        <li><strong>Data feed:</strong> Free accounts use the IEX data feed. Always specify <code>feed='iex'</code> when requesting market data. The SIP feed (consolidated market data) requires a paid data subscription.</li>
+        <li><strong>Pattern Day Trading:</strong> If your account has less than $25,000, you are limited to 3 day trades per 5 business days. Design your strategy around swing trades (holding overnight) to avoid this restriction.</li>
+        <li><strong>Market hours:</strong> Unlike crypto, US stocks only trade during market hours (9:30 AM - 4:00 PM ET). Your bot needs to account for this.</li>
+      </ul>
+
+      <p><strong>Pricing:</strong> Commission-free trading. Free IEX data feed. SIP data feed at $9/month. No platform fees.</p>
+
+      <p><a href="#affiliate-link-3" class="btn">Open an Alpaca Account</a></p>
+
+      <hr>
+
+      <h2>Risk Management: The Rules That Keep You Alive</h2>
+
+      <p>Every profitable bot trader follows these rules. Ignore them and you will eventually lose everything.</p>
+
+      <h3>Rule 1: Never Risk More Than 2% Per Trade</h3>
+
+      <p>If your total trading capital is $10,000, no single trade should risk more than $200. This means setting stop-losses and sizing your positions so that even in the worst-case scenario, a single losing trade does not materially impact your capital.</p>
+
+      <h3>Rule 2: Use Stop-Losses on Every Trade</h3>
+
+      <p>A stop-loss is an automatic sell order that triggers when the price drops to a certain level. Without a stop-loss, a single bad trade can wipe out weeks or months of gains. For DCA bots, the equivalent is limiting your maximum safety orders and total position size.</p>
+
+      <h3>Rule 3: Diversify Across Assets and Strategies</h3>
+
+      <p>Do not put all your capital into a single bot trading a single pair. Run multiple bots across different assets and strategies. When one strategy underperforms, others compensate. A good starting allocation for $10,000 in trading capital:</p>
+
+      <ul>
+        <li>40% in DCA bots across 3-4 major crypto pairs (BTC, ETH, SOL, XRP)</li>
+        <li>30% in stock mean-reversion strategies across 5-10 blue-chip stocks</li>
+        <li>20% held in reserve for manual opportunities</li>
+        <li>10% for experimental strategies (new pairs, new timeframes)</li>
+      </ul>
+
+      <h3>Rule 4: Track Everything</h3>
+
+      <p>Maintain a trading journal. Record every bot configuration change, every significant market event, and weekly performance summaries. The data you collect in the first three months is more valuable than any trading course.</p>
+
+      <h3>Rule 5: Start Small and Scale Slowly</h3>
+
+      <p>Begin with the minimum viable amount. For 3Commas, that is $200-500 in your exchange account. For Alpaca paper trading, you get $100,000 in simulated capital. For Freqtrade, backtest first with zero real money at stake. Only scale up after at least 30 days of consistent results.</p>
+
+      <hr>
+
+      <h2>Platform Comparison</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>3Commas</th>
+              <th>Freqtrade</th>
+              <th>Alpaca</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Markets</strong></td>
+              <td>Crypto only</td>
+              <td>Crypto only</td>
+              <td>Stocks + Crypto</td>
+            </tr>
+            <tr>
+              <td><strong>Difficulty</strong></td>
+              <td>Beginner</td>
+              <td>Intermediate-Advanced</td>
+              <td>Intermediate</td>
+            </tr>
+            <tr>
+              <td><strong>Coding Required</strong></td>
+              <td>No</td>
+              <td>Yes (Python)</td>
+              <td>Yes (Python)</td>
+            </tr>
+            <tr>
+              <td><strong>Cost</strong></td>
+              <td>$0-79/mo</td>
+              <td>Free</td>
+              <td>Free</td>
+            </tr>
+            <tr>
+              <td><strong>Backtesting</strong></td>
+              <td>Limited</td>
+              <td>Excellent</td>
+              <td>Manual</td>
+            </tr>
+            <tr>
+              <td><strong>Customization</strong></td>
+              <td>Templates</td>
+              <td>Unlimited</td>
+              <td>Unlimited</td>
+            </tr>
+            <tr>
+              <td><strong>Best Strategy</strong></td>
+              <td>DCA bots</td>
+              <td>Custom algos</td>
+              <td>Stock swing trading</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr>
+
+      <h2>Your First 30 Days: A Practical Roadmap</h2>
+
+      <p><strong>Week 1:</strong> Set up a 3Commas account, connect your exchange (Coinbase or Binance), and run a single DCA bot on BTC/USD in paper trading mode with conservative settings.</p>
+
+      <p><strong>Week 2:</strong> While your 3Commas paper bot runs, install Freqtrade and run backtests on the sample strategies. Study the results and learn how different parameters affect performance.</p>
+
+      <p><strong>Week 3:</strong> Open an Alpaca paper trading account and deploy a simple stock trading script. Simultaneously, review your 3Commas paper trading results and adjust settings if needed.</p>
+
+      <p><strong>Week 4:</strong> Evaluate all three platforms. Decide which fits your style, risk tolerance, and technical ability. If paper trading results are positive, allocate a small amount of real capital (no more than $500) and go live with your best-performing strategy.</p>
+
+      <div class="cta-box">
+        <h3>Ready to Start Automated Trading?</h3>
+        <p>3Commas is the fastest path for beginners. Set up your first DCA bot in under 15 minutes and start paper trading today.</p>
+        <a href="#affiliate-link-1" class="btn">Start with 3Commas Free Plan</a>
+      </div>
+
+      <hr>
+
+      <p><em>Disclosure: Some links in this article are affiliate links. If you purchase through these links, we earn a commission at no additional cost to you. We only recommend tools we actively use and believe in. This article is for educational purposes only and is not financial advice.</em></p>
+
+    </div>
+  </article>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-links">
+        <a href="../">Home</a>
+        <a href="../#articles">Articles</a>
+        <a href="../#subscribe">Newsletter</a>
+        <a href="https://github.com/migar-git" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://gumroad.com/aresmax" target="_blank" rel="noopener">Products</a>
+      </div>
+      <p>&copy; 2026 Aresmax. Built with AI. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
