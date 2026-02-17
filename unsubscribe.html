@@ -15,10 +15,13 @@
         input[type="email"]:focus { outline: none; border-color: #d4a853; }
         button { padding: 14px; border: none; border-radius: 8px; background: #d4a853; color: #000; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
         button:hover { background: #e6bc6a; }
+        button:disabled { background: #666; cursor: not-allowed; }
         .note { font-size: 0.85rem; color: #666; margin-top: 20px; }
         .success { display: none; }
         .success.show { display: block; }
         .success h2 { color: #4ade80; margin-bottom: 12px; }
+        .error { color: #f87171; font-size: 0.9rem; display: none; margin-top: 8px; }
+        .error.show { display: block; }
     </style>
 </head>
 <body>
@@ -28,31 +31,53 @@
             <p>We're sorry to see you go. Enter your email below and we'll remove you from all future communications.</p>
             <form id="unsub-form">
                 <input type="email" id="email" placeholder="your@email.com" required>
-                <button type="submit">Unsubscribe</button>
+                <button type="submit" id="submit-btn">Unsubscribe</button>
+                <div id="error-msg" class="error"></div>
             </form>
-            <p class="note">This will opt you out of all outreach emails from Aresmax. It may take up to 48 hours to process.</p>
+            <p class="note">This will opt you out of all outreach emails from Aresmax. Processing is immediate.</p>
         </div>
         <div id="success-section" class="success">
             <h2>✓ You've been unsubscribed</h2>
             <p>Your email has been removed from our mailing list. You won't receive any further communications from us.</p>
-            <p class="note">If you received an email after submitting this form, it may have been sent before your request was processed.</p>
         </div>
     </div>
     <script>
-        document.getElementById('unsub-form').addEventListener('submit', function(e) {
+        const API_URL = 'http://192.168.0.219:8586/unsubscribe';
+
+        document.getElementById('unsub-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const email = document.getElementById('email').value;
-            // Log to console for now — in production this would hit an API
-            console.log('Unsubscribe request:', email);
-            // Store in localStorage as a simple record
-            const unsubs = JSON.parse(localStorage.getItem('unsubscribes') || '[]');
-            unsubs.push({ email: email, date: new Date().toISOString() });
-            localStorage.setItem('unsubscribes', JSON.stringify(unsubs));
-            // Also send via mailto as a backup notification
-            const mailtoLink = `mailto:aresmaxbot@gmail.com?subject=Unsubscribe%20Request&body=Please%20remove%20${encodeURIComponent(email)}%20from%20all%20mailing%20lists.`;
-            window.open(mailtoLink, '_blank');
-            document.getElementById('form-section').style.display = 'none';
-            document.getElementById('success-section').classList.add('show');
+            const email = document.getElementById('email').value.trim();
+            const btn = document.getElementById('submit-btn');
+            const errEl = document.getElementById('error-msg');
+            
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+            errEl.classList.remove('show');
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    document.getElementById('form-section').style.display = 'none';
+                    document.getElementById('success-section').classList.add('show');
+                } else {
+                    errEl.textContent = data.error || 'Something went wrong. Please try again.';
+                    errEl.classList.add('show');
+                    btn.disabled = false;
+                    btn.textContent = 'Unsubscribe';
+                }
+            } catch (err) {
+                // Fallback: mailto if API unreachable
+                const mailtoLink = `mailto:aresmaxbot@gmail.com?subject=Unsubscribe%20Request&body=Please%20remove%20${encodeURIComponent(email)}%20from%20all%20mailing%20lists.`;
+                window.location.href = mailtoLink;
+                document.getElementById('form-section').style.display = 'none';
+                document.getElementById('success-section').classList.add('show');
+            }
         });
     </script>
 </body>
