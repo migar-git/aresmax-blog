@@ -4,6 +4,11 @@ All notable changes to aresmax-blog are documented here.
 
 ## [Unreleased]
 
+### Added
+- `robots.txt` and `sitemap.xml` (CHANGELOG previously claimed these but they were missing on disk)
+- YAML frontmatter (title/owner/status/last_reviewed) on all `docs/**/*.md` files so the `doc-lint` CI gate passes
+- `CODE_REVIEW_REPORT.md`, `findings.json`, `prompt.md`, `run_review.sh`, `run_review.ps1` produced by `/remediate-repo`
+
 ## [1.0.0] — 2026-04-07
 
 ### Added
