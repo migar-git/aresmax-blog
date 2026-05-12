@@ -1,3 +1,10 @@
+---
+title: "Architecture — aresmax-blog"
+owner: "migar"
+status: "Active"
+last_reviewed: "2026-05-12"
+---
+
 # Architecture — aresmax-blog
 
 ## Overview

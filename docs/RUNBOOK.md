@@ -1,3 +1,10 @@
+---
+title: "Runbook — aresmax-blog"
+owner: "migar"
+status: "Active"
+last_reviewed: "2026-05-12"
+---
+
 # Runbook — aresmax-blog
 
 ## Service Overview

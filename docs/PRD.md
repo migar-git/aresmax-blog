@@ -4,6 +4,7 @@ version: "1.0"
 status: "Active"
 owner: "migar"
 last-updated: "2026-04-07"
+last_reviewed: "2026-05-12"
 ---
 
 # Aresmax Blog — PRD

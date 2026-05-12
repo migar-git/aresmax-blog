@@ -1,3 +1,10 @@
+---
+title: "Security — aresmax-blog"
+owner: "migar"
+status: "Active"
+last_reviewed: "2026-05-12"
+---
+
 # Security — aresmax-blog
 
 ## Content Security Policy
