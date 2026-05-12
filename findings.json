@@ -1,0 +1,155 @@
+{
+  "repo": {
+    "name": "aresmax-blog",
+    "path": "C:/Users/migar/DEV/aresmax-blog",
+    "defaultBranch": "main",
+    "detectedStacks": ["Static HTML/CSS/JS", "Markdown docs"],
+    "detectedBuildCommands": [],
+    "detectedTestCommands": ["markdownlint 'docs/**/*.md' '*.md' --config .markdownlint.json"]
+  },
+  "summary": {
+    "generatedAt": "2026-05-12T12:56:00Z",
+    "findingCountsBySeverity": { "critical": 0, "high": 2, "medium": 1, "low": 1, "info": 1 },
+    "topRisks": [
+      "doc-lint CI would fail on any PR touching docs/ — 19 frontmatter violations across 10 files (now fixed)",
+      "robots.txt and sitemap.xml claimed in CHANGELOG v1.0.0 were missing on disk — SEO impact for a content-first site"
+    ],
+    "recommendedNextSteps": [
+      "Run npx markdownlint-cli2 'docs/**/*.md' '*.md' locally before opening PRs to catch MD rule violations early",
+      "Add a lighthouse-ci job to enforce the perf/a11y/SEO scores promised in docs/TEST_STRATEGY.md",
+      "Wire pre-commit to run the frontmatter check from .github/workflows/doc-lint.yml"
+    ]
+  },
+  "findings": [
+    {
+      "id": "F-0001",
+      "title": "doc-lint CI gate fails — 19 frontmatter violations across 10 docs/**/*.md files",
+      "severity": "high",
+      "category": "build",
+      "status": "fixed",
+      "confidence": "high",
+      "standardsBasis": [".github/workflows/doc-lint.yml requires title/owner/status/last_reviewed; status ∈ {Draft,Active,Review,Deprecated,Archived}"],
+      "locations": [
+        {"file": "docs/ARCHITECTURE.md", "startLine": 1, "endLine": 1, "symbol": "frontmatter"},
+        {"file": "docs/DEPLOYMENT.md", "startLine": 1, "endLine": 1, "symbol": "frontmatter"},
+        {"file": "docs/DEVELOPMENT.md", "startLine": 1, "endLine": 5, "symbol": "frontmatter"},
+        {"file": "docs/MANIFEST.md", "startLine": 1, "endLine": 5, "symbol": "frontmatter"},
+        {"file": "docs/PRD.md", "startLine": 1, "endLine": 7, "symbol": "frontmatter"},
+        {"file": "docs/ROADMAP.md", "startLine": 1, "endLine": 5, "symbol": "frontmatter"},
+        {"file": "docs/RUNBOOK.md", "startLine": 1, "endLine": 1, "symbol": "frontmatter"},
+        {"file": "docs/SECURITY.md", "startLine": 1, "endLine": 1, "symbol": "frontmatter"},
+        {"file": "docs/TEST_STRATEGY.md", "startLine": 1, "endLine": 1, "symbol": "frontmatter"},
+        {"file": "docs/ADR/001-initial-architecture.md", "startLine": 1, "endLine": 1, "symbol": "frontmatter"}
+      ],
+      "evidence": "Running the frontmatter validator embedded in .github/workflows/doc-lint.yml produced 19 errors: missing blocks on 6 files, missing required fields on 3 files, and 3 files using status='Current' which is not in the valid set.",
+      "impact": "Every PR that touches docs/ would fail the doc-lint job. New contributors can't merge doc updates until this is fixed.",
+      "recommendation": "Add the required frontmatter block (title, owner, status, last_reviewed) to each non-compliant file, replacing the legacy prd-version/last-updated/status='Current' schema while preserving existing data.",
+      "remediationPlan": [
+        "Add full frontmatter to 6 files that had none (ARCHITECTURE, DEPLOYMENT, RUNBOOK, SECURITY, TEST_STRATEGY, ADR/001)",
+        "Add missing fields to 3 files with wrong schema (DEVELOPMENT, MANIFEST, ROADMAP)",
+        "Add last_reviewed to PRD.md (had everything else)",
+        "Re-run the validator and confirm 0 errors"
+      ],
+      "verificationSteps": [
+        "bash run_review.sh --mode verify",
+        "Expected: '0 frontmatter errors'"
+      ],
+      "relatedFindings": ["F-0005"],
+      "commitRefs": [],
+      "ownerHint": "migar"
+    },
+    {
+      "id": "F-0002",
+      "title": "CHANGELOG.md v1.0.0 claims robots.txt and sitemap.xml exist, but both files are absent on disk",
+      "severity": "high",
+      "category": "compliance",
+      "status": "fixed",
+      "confidence": "high",
+      "standardsBasis": ["docs/TEST_STRATEGY.md SEO targets — minimum Lighthouse SEO ≥ 90 requires robots.txt + sitemap.xml"],
+      "locations": [
+        {"file": "CHANGELOG.md", "startLine": 14, "endLine": 14, "symbol": "v1.0.0 Added"}
+      ],
+      "evidence": "CHANGELOG line 14 claims '- robots.txt and sitemap.xml'. `find . -name robots.txt -o -name sitemap.xml` returns nothing. SEO crawlers therefore have no crawl directives and no sitemap discovery — directly contradicts the v1.0.0 release notes.",
+      "impact": "Search engines crawl the site without guidance; new articles are indexed slowly. Trust gap between CHANGELOG and actual repo state for any future contributor or auditor.",
+      "recommendation": "Create both files at repo root with the canonical site URL (https://migar-git.github.io/aresmax-blog/) and the seven content URLs (index, store, unsubscribe excluded from crawl, five articles).",
+      "remediationPlan": [
+        "Write robots.txt with Allow:/ + Disallow:/unsubscribe.html + Sitemap directive",
+        "Write sitemap.xml listing all 7 indexable pages with 2026-05-12 lastmod",
+        "Note the fix in CHANGELOG.md [Unreleased]"
+      ],
+      "verificationSteps": [
+        "ls robots.txt sitemap.xml",
+        "Validate sitemap.xml is well-formed XML"
+      ],
+      "relatedFindings": [],
+      "commitRefs": [],
+      "ownerHint": "migar"
+    },
+    {
+      "id": "F-0003",
+      "title": "Two portfolio repos failed to fetch during /agency-repo-sync — veon, vfta",
+      "severity": "medium",
+      "category": "build",
+      "status": "needs_owner",
+      "confidence": "high",
+      "standardsBasis": ["agency-repo-sync skill exits non-zero when any repo fails"],
+      "locations": [
+        {"file": "~/.myskills/sync-20260512-085820.log", "startLine": 1, "endLine": 1, "symbol": "fetch failed"}
+      ],
+      "evidence": "Sync output: 'WARN fetch failed veon' and 'WARN fetch failed vfta'. 48 other repos came up CLEAN.",
+      "impact": "Two repos are stale relative to remote. Could be network hiccup, auth (private repo with rotated token), or repo renamed/deleted on GitHub.",
+      "recommendation": "Owner should run `cd ~/DEV/veon && git fetch -v` and `cd ~/DEV/vfta && git fetch -v` to surface the underlying error (auth/404/network).",
+      "remediationPlan": [
+        "Re-run fetch with -v in each repo",
+        "If 404: check if the repo was renamed or made private",
+        "If auth: run `gh auth refresh`"
+      ],
+      "verificationSteps": [
+        "agency-repo-sync re-run shows 0 failures"
+      ],
+      "relatedFindings": [],
+      "commitRefs": [],
+      "ownerHint": "migar"
+    },
+    {
+      "id": "F-0004",
+      "title": "CSP allows 'unsafe-inline' for script-src — XSS hardening opportunity",
+      "severity": "low",
+      "category": "security",
+      "status": "wont_fix",
+      "confidence": "medium",
+      "standardsBasis": ["docs/SECURITY.md acknowledges this and notes 'tighten to nonce if possible'"],
+      "locations": [
+        {"file": "index.html", "startLine": 5, "endLine": 5, "symbol": "Content-Security-Policy meta"}
+      ],
+      "evidence": "CSP includes `script-src 'self' 'unsafe-inline'`. For a static GitHub Pages site with no server, nonces cannot be generated per-request — this is a documented constraint, not a defect.",
+      "impact": "If an attacker could inject HTML (which they can't on a static site that takes no user input), they could execute inline JS. Real-world risk is negligible because there is no user-controlled content path.",
+      "recommendation": "Document the constraint in SECURITY.md (already done) and move inline scripts to external files where practical. Revisit if a server-rendered surface is ever added.",
+      "remediationPlan": [],
+      "verificationSteps": [],
+      "relatedFindings": [],
+      "commitRefs": [],
+      "ownerHint": "migar"
+    },
+    {
+      "id": "F-0005",
+      "title": "No local pre-commit hook for markdownlint / frontmatter checks — drift can re-occur",
+      "severity": "info",
+      "category": "maintainability",
+      "status": "open",
+      "confidence": "medium",
+      "standardsBasis": ["doc-lint workflow runs in CI but not pre-commit; nothing prevents F-0001 from happening again"],
+      "locations": [
+        {"file": ".github/workflows/doc-lint.yml", "startLine": 1, "endLine": 1, "symbol": "doc-lint workflow"}
+      ],
+      "evidence": "There is no `.pre-commit-config.yaml` in the repo. Frontmatter and markdown drift only surfaces at PR time, after work is already done.",
+      "impact": "Easy to re-introduce the same class of error F-0001 fixed.",
+      "recommendation": "Add a `.pre-commit-config.yaml` that runs `markdownlint-cli2` + the embedded Python frontmatter check. Out of scope for this iteration; tracked as follow-up.",
+      "remediationPlan": [],
+      "verificationSteps": [],
+      "relatedFindings": ["F-0001"],
+      "commitRefs": [],
+      "ownerHint": "migar"
+    }
+  ]
+}
